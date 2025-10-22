@@ -1,68 +1,78 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/6Q5Uz8Oe)
+🧩 Conditional Diffusion Model for Handwritten Digits
+
+Architecture: U-Net with digit / domain embeddings and sinusoidal time encoding.
+
+Training: Classifier-free guidance, cosine β schedule (T = 1000), AdamW optimizer + EMA stabilization.
+
+Dataset: Even digits → MNIST-M domain, Odd digits → SVHN domain.
+
+Visualization: Reverse diffusion (t = 1000 → 0) shows progressive denoising and digit emergence.
+
+Results:
+
+MNIST-M Accuracy = 0.920
+
+SVHN Accuracy = 0.988
+
+Overall = 0.954
+→ Demonstrates stable cross-domain conditional generation and clear digit reconstruction.
+
+🌀 ControlNet on Stable Diffusion
+
+Base Architecture: Stable Diffusion v1-4 + custom ControlNet module.
+
+Integration: Forward hooks inject ControlNet features into UNet layers, dynamically aligning spatial and channel dimensions.
+
+Training: Only ControlNet parameters optimized; Stable Diffusion weights frozen to preserve semantic priors.
+
+Experiment: “Two-circle” control images used to test structural and color guidance.
+
+Results:
+
+Mean Score (IoU×CLIP) = 0.6581
+
+Final Mean IoU = 0.6581 (≈ 20% above class average)
+→ Model accurately controls geometry / position but shows limited color fidelity due to data and prompt imbalance.
+
+🧠 Key Techniques
+
+Diffusion Model (DDPM / DDIM)
+
+Classifier-Free Guidance
+
+U-Net Conditional Architecture
+
+ControlNet Integration on Stable Diffusion
+
+Cosine Noise Scheduling
+
+Gradient Clipping & EMA Optimization
 
 
-## Deadline
 
-**2025/10/22 (Wed.) 23:59 (GMT+8)**
+🔗 Reference
+Diffusion Models
 
-## Packages
+Jonathan Ho, Ajay Jain, Pieter Abbeel.
+Denoising Diffusion Probabilistic Models. NeurIPS 2020.
+[arXiv 2006.11239]
 
-This homework should be completed using Python 3.8.5. For a list of packages you are allowed to import in this assignment, please refer to the `stable-diffusion/environment.yaml` for more details.
+Diffusion Sampling
 
-### Installation
+Jiaming Song, Chenlin Meng, Stefano Ermon.
+Denoising Diffusion Implicit Models. ICLR 2021.
+[arXiv 2010.02502]
 
-You can run the following commands to install all the packages listed in the `environment.yaml`:
+ControlNet
 
-```sh
-cd stable-diffusion
-conda env create -f environment.yaml
-conda activate ldm
-```
+Lvmin Zhang, Maneesh Agrawala.
+Adding Conditional Control to Text-to-Image Diffusion Models. arXiv 2023.
+[arXiv 2302.05543]
 
-To install the stable-diffusion v1.4. You can download the sd-v1-4.ckpt file from [hugging face link](https://huggingface.co/CompVis/stable-diffusion-v-1-4-original/tree/main) or use wget
+Official Implementation: https://github.com/lllyasviel/ControlNet
 
-```sh
-wget https://huggingface.co/CompVis/stable-diffusion-v-1-4-original/resolve/main/sd-v1-4.ckpt
-```
+Evaluation Framework
 
-place the model checkpoint in the following path:
+SAM-2: https://github.com/facebookresearch/sam2
 
-```sh
-stable-diffusion/models/ldm/stable-diffusion-v1/model.ckpt
-```
-
-You can run the following command to test if you successfully build the environment
-```sh
-python scripts/txt2img.py --prompt "a photograph of an astronaut riding a horse"
-```
-
-(Optional)
-You can also install the environment with pip and requirements.txt, note that the version of pytorch should match your CUDA version. [pytorch CUDA version](https://pytorch.org/get-started/previous-versions/)
-```sh
-pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113
-pip install -r requirements.txt
-cd stable-diffusion
-pip install -e .
-```
-
-> :warning: **Note**: Using packages with different versions will very likely lead to compatibility issues, so make sure that you install the correct version if one is specified above. E-mail or ask the TAs first if you want to import other packages.
-
-> :warning: **Important**: You can **NOT** use **diffuser** for easy implementation!
-
-## Hint
-
-Your model is a DDPM, located in stable-diffusion/ldm/models/diffusion/ddpm.py. You may need to use model.cond_stage_model for the text encoder. Since Diffusion v1.4 is a latent diffusion model that operates in the latent space, functions such as model.encode_first_stage and model.get_first_stage_encoding may also be necessary. Additionally, model.q_sample could be useful for your process.
-
-## Grading
-
-We provide the code for evaluation of hw2_3. For details on how to use it, please refer to the explanation in the slides.
-
-## Q&A
-
-If you have any problems related to HW2, you may:
-
-- **Use TA Hours**: Tue. 16:30:~17:29 in MK514, Fri. 16:30 ~ 17:20​.
-- **Contact TAs by Email**: [ntu-dlcv-2025-fall-ta@googlegroups.com](mailto:ntu-dlcv-2025-fall-ta@googlegroups.com) with the title `[HW2] Problems about ...`
-- **Post Your Question**: Under the HW2 discussion section in NTU COOL.
-
-Feel free to reach out if you have any questions or need further assistance!
+CLIP: https://github.com/openai/CLIP
